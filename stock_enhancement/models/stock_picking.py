@@ -6,7 +6,11 @@ from odoo import models, fields, api
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
-    scheduled_time = fields.Datetime('Scheduled time', compute='_compute_scheduled_time_only', )
+    scheduled_time = fields.Char(
+        string='Scheduled Time',
+        compute='_compute_scheduled_time_only',
+        store=False,
+    )
 
     def _compute_scheduled_time_only(self):
         for record in self:

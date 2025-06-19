@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+from pytz import timezone, UTC
 
 
 class StockPicking(models.Model):
@@ -15,6 +16,10 @@ class StockPicking(models.Model):
     def _compute_scheduled_time_only(self):
         for record in self:
             if record.scheduled_date:
-                record.scheduled_time = record.scheduled_date.strftime('%H:%M:%S')
+                # Get company timezone, fallback to UTC
+                company_tz = record.company_id.partner_id.tz or 'UTC'
+                # Convert from UTC to company timezone
+                local_dt = record.scheduled_date.replace(tzinfo=UTC).astimezone(timezone(company_tz))
+                record.scheduled_time = local_dt.strftime('%H:%M:%S')
             else:
                 record.scheduled_time = ''
